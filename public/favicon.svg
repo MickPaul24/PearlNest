@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Rounded square background -->
+  <rect width="32" height="32" rx="7" fill="#1B3D6E"/>
+  <!-- House body -->
+  <rect x="9" y="17" width="14" height="10" rx="1.5" fill="#ffffff"/>
+  <!-- Roof -->
+  <polygon points="5.5,17 16,7 26.5,17" fill="#F59E0B"/>
+  <!-- Door -->
+  <rect x="13" y="21" width="6" height="6" rx="1" fill="#1B3D6E"/>
+  <!-- Pearl dot above roof peak -->
+  <circle cx="16" cy="5.5" r="2.5" fill="#F59E0B" opacity="0.9"/>
+</svg>
