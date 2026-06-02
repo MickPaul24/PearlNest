@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /lyton/public/
+    RewriteBase /PearlNest/public/
 
     RewriteRule ^uploads/ - [L]
 

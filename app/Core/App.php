@@ -35,11 +35,12 @@ class App
 
     private function parseUrl(): array
     {
-        $url = $_SERVER['REQUEST_URI'] ?? '';
-        $basePath = dirname($_SERVER['SCRIPT_NAME']);
-        $path = preg_replace('#^' . preg_quote($basePath, '#') . '#', '', $url);
-        $path = parse_url($path, PHP_URL_PATH);
-        $path = trim($path, '/');
+        $config   = require __DIR__ . '/../../config/config.php';
+        $basePath = rtrim(parse_url($config['app']['base_url'], PHP_URL_PATH), '/');
+        $url      = $_SERVER['REQUEST_URI'] ?? '';
+        $path     = preg_replace('#^' . preg_quote($basePath, '#') . '#', '', $url);
+        $path     = parse_url($path, PHP_URL_PATH);
+        $path     = trim($path, '/');
 
         return $path ? explode('/', $path) : [];
     }

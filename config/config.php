@@ -3,7 +3,7 @@
 return [
     'app' => [
         'name'     => 'PearlNest',
-        'base_url' => 'http://localhost/lyton/public',
+        'base_url' => 'http://localhost/PearlNest',
     ],
     'db' => [
         'driver'  => 'mysql',
