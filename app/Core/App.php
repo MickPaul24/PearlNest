@@ -39,6 +39,7 @@ class App
         $basePath = rtrim(parse_url($config['app']['base_url'], PHP_URL_PATH), '/');
         $url      = $_SERVER['REQUEST_URI'] ?? '';
         $path     = preg_replace('#^' . preg_quote($basePath, '#') . '#', '', $url);
+        $path     = preg_replace('#^/public#', '', $path);
         $path     = parse_url($path, PHP_URL_PATH);
         $path     = trim($path, '/');
 
