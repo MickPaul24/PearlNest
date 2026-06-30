@@ -1,4 +1,4 @@
-# Lyton PHP MVC Project
+# PearlNest 
 
 A standard PHP MVC project scaffold using Composer autoloading.
 
