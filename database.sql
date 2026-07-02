@@ -331,13 +331,12 @@ INSERT INTO `ratings` (`property_id`, `name`, `rating`, `review`) VALUES
 (9,  'Brenda Akello',    5, 'Stylish, modern, and the views of Kampala at night are breathtaking.'),
 (10, 'Fatuma Nabirye',   5, 'Family-friendly and spacious. Kids love the garden.');
 
-
 -- ════════════════════════════════════════════════════════════
 --  Summary
 -- ════════════════════════════════════════════════════════════
 -- Tables  : admins, properties, property_images, property_videos,
 --           inquiries, ratings
--- Records : 1 admin | 10 properties | 21 images | 5 inquiries | 9 ratings
+-- Records : 1 admin | 13 properties | 27 images | 8 inquiries | 12 ratings
 --
 -- Admin login → username: admin / password: PearlNest2024
 --   NOTE: The hash above is a placeholder. For a working login run
