@@ -47,6 +47,7 @@ CREATE TABLE `properties` (
   `address` TEXT DEFAULT NULL COMMENT 'Street / plot number',
   `price` DECIMAL(12,2) NOT NULL,
   `price_period` ENUM('night','month','year') NOT NULL DEFAULT 'month',
+  `touring_fee` DECIMAL(12,2) NOT NULL DEFAULT 0.00,
   `bedrooms` INT NOT NULL DEFAULT 1,
   `bathrooms` INT NOT NULL DEFAULT 1,
   `area_sqm` INT DEFAULT NULL COMMENT 'Floor area in square metres',

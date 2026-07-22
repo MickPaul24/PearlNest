@@ -53,6 +53,7 @@ CREATE TABLE properties (
     address      TEXT,
     price        DECIMAL(12,2) NOT NULL,
     price_period ENUM('night','month','year') DEFAULT 'month',
+    touring_fee  DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     bedrooms     INT DEFAULT 1,
     bathrooms    INT DEFAULT 1,
     area_sqm     INT,

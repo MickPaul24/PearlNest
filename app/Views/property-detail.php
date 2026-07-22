@@ -75,6 +75,9 @@ require __DIR__ . '/partials/header.php';
             <div class="detail-price-block">
                 <span class="detail-price">UGX <?= number_format((float)$property['price']) ?></span>
                 <span class="detail-period">/ <?= $property['price_period'] ?></span>
+                <?php if (!empty($property['touring_fee']) && $property['touring_fee'] > 0): ?>
+                <div class="detail-tour"><b>Touring fee:</b> UGX <?= number_format((float)$property['touring_fee']) ?></div>
+                <?php endif; ?>
                 <div class="detail-rating">
                     <?php for ($s = 1; $s <= 5; $s++): ?>
                         <i data-lucide="star" class="<?= $s <= round($property['rating']) ? 'text-gold' : 'text-muted' ?>"></i>

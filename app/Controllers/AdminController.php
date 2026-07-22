@@ -327,6 +327,7 @@ class AdminController extends Controller
             ':address'      => trim($_POST['address']     ?? ''),
             ':price'        => (float)($_POST['price']    ?? 0),
             ':price_period' => $_POST['price_period']     ?? 'month',
+            ':touring_fee'  => isset($_POST['touring_fee']) ? (float)$_POST['touring_fee'] : 0.0,
             ':bedrooms'     => (int)($_POST['bedrooms']   ?? 1),
             ':bathrooms'    => (int)($_POST['bathrooms']  ?? 1),
             ':area_sqm'     => $_POST['area_sqm']         ? (int)$_POST['area_sqm'] : null,
@@ -361,6 +362,7 @@ class AdminController extends Controller
             'address'      => trim($_POST['address']     ?? ''),
             'price'        => (float)($_POST['price']    ?? 0),
             'price_period' => $_POST['price_period']     ?? 'month',
+            'touring_fee'  => isset($_POST['touring_fee']) ? (float)$_POST['touring_fee'] : 0.0,
             'bedrooms'     => (int)($_POST['bedrooms']   ?? 1),
             'bathrooms'    => (int)($_POST['bathrooms']  ?? 1),
             'area_sqm'     => $_POST['area_sqm']         ? (int)$_POST['area_sqm'] : null,
@@ -418,20 +420,80 @@ class AdminController extends Controller
             }
         }
 
-        // Handle video upload
-        if (!empty($_FILES['video']['tmp_name']) && is_uploaded_file($_FILES['video']['tmp_name'])) {
-            $videoDir  = __DIR__ . '/../../public/uploads/videos/';
-            if (!is_dir($videoDir)) {
-                mkdir($videoDir, 0755, true);
-            }
-            $allowedVideo = ['video/mp4', 'video/webm', 'video/ogg'];
-            $mime         = mime_content_type($_FILES['video']['tmp_name']);
-            if (in_array($mime, $allowedVideo) && $_FILES['video']['size'] <= 50 * 1024 * 1024) {
-                $ext      = pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION);
-                $filename = uniqid('vid_', true) . '.' . strtolower($ext);
-                $destPath = $videoDir . $filename;
-                if (move_uploaded_file($_FILES['video']['tmp_name'], $destPath)) {
-                    $propertyModel->addVideo($propertyId, 'uploads/videos/' . $filename, $_POST['video_title'] ?? '');
+        // Handle video upload with error checks and clear feedback
+        if (isset($_FILES['video']) && $_FILES['video']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $err = $_FILES['video']['error'];
+            if ($err !== UPLOAD_ERR_OK) {
+                switch ($err) {
+                    case UPLOAD_ERR_INI_SIZE:
+                    case UPLOAD_ERR_FORM_SIZE:
+                        $this->flash('error', 'Video file is too large. Max 50 MB.');
+                        break;
+                    case UPLOAD_ERR_PARTIAL:
+                        $this->flash('error', 'Video upload was interrupted. Please try again.');
+                        break;
+                    case UPLOAD_ERR_NO_TMP_DIR:
+                        $this->flash('error', 'Server configuration error: missing temporary folder.');
+                        break;
+                    case UPLOAD_ERR_CANT_WRITE:
+                        $this->flash('error', 'Failed to write uploaded video to disk.');
+                        break;
+                    case UPLOAD_ERR_EXTENSION:
+                        $this->flash('error', 'A server extension prevented the video upload.');
+                        break;
+                    default:
+                        $this->flash('error', 'Unknown error during video upload.');
+                }
+            } else {
+                $videoDir  = __DIR__ . '/../../public/uploads/videos/';
+                if (!is_dir($videoDir)) {
+                    mkdir($videoDir, 0755, true);
+                }
+                $allowedVideo = ['video/mp4', 'video/webm', 'video/ogg'];
+                $tmpName      = $_FILES['video']['tmp_name'];
+                $mime         = mime_content_type($tmpName) ?: '';
+                $maxSize      = 50 * 1024 * 1024;
+
+                if (!in_array($mime, $allowedVideo)) {
+                    $this->flash('error', 'Unsupported video format. Use MP4, WEBM or OGG.');
+                } elseif ($_FILES['video']['size'] > $maxSize) {
+                    $this->flash('error', 'Video exceeds the 50 MB size limit.');
+                } elseif (!is_uploaded_file($tmpName)) {
+                    $this->flash('error', 'No valid uploaded video found.');
+                } else {
+                    $ext      = pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION);
+                    $filename = uniqid('vid_', true) . '.' . strtolower($ext);
+                    $destPath = $videoDir . $filename;
+
+                    // Ensure video dir writable and log diagnostic info
+                    $logDir = __DIR__ . '/../../storage/logs/';
+                    if (!is_dir($logDir)) {
+                        @mkdir($logDir, 0755, true);
+                    }
+                    $logFile = $logDir . 'upload_debug.log';
+                    $log = sprintf("[%s] property=%d tmp=%s name=%s mime=%s size=%d err=%d dest=%s writable=%s\n",
+                        date('Y-m-d H:i:s'),
+                        $propertyId,
+                        $tmpName,
+                        $_FILES['video']['name'] ?? '',
+                        $mime,
+                        $_FILES['video']['size'] ?? 0,
+                        $_FILES['video']['error'] ?? 0,
+                        $destPath,
+                        is_writable($videoDir) ? 'yes' : 'no'
+                    );
+                    @file_put_contents($logFile, $log, FILE_APPEND | LOCK_EX);
+
+                    if (!is_writable($videoDir)) {
+                        $this->flash('error', 'Server cannot write to the video uploads folder. Check permissions.');
+                    } elseif (move_uploaded_file($tmpName, $destPath)) {
+                        $propertyModel->addVideo($propertyId, 'uploads/videos/' . $filename, $_POST['video_title'] ?? '');
+                        $this->flash('success', 'Video uploaded successfully.');
+                        @file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] moved ok -> $destPath\n", FILE_APPEND | LOCK_EX);
+                    } else {
+                        $this->flash('error', 'Failed to move uploaded video to storage.');
+                        @file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] move_uploaded_file failed for $tmpName -> $destPath\n", FILE_APPEND | LOCK_EX);
+                    }
                 }
             }
         }

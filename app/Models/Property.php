@@ -71,7 +71,9 @@ class Property extends Model
                    (SELECT image_path FROM property_images WHERE property_id = p.id AND is_primary = 1 LIMIT 1) AS primary_image
             FROM properties p
             WHERE p.is_featured = 1 AND p.status = 'available'
-            ORDER BY p.rating DESC
+            /* Prefer recently-updated featured properties so admin-selected items appear immediately,
+               then fall back to rating. */
+            ORDER BY p.updated_at DESC, p.rating DESC
             LIMIT :limit
         ");
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
@@ -103,10 +105,10 @@ class Property extends Model
     {
         $stmt = $this->db->prepare("
             INSERT INTO properties
-                (title, type, description, location, district, address, price, price_period,
+                (title, type, description, location, district, address, price, price_period, touring_fee,
                  bedrooms, bathrooms, area_sqm, status, is_featured, amenities, badge)
             VALUES
-                (:title, :type, :description, :location, :district, :address, :price, :price_period,
+                (:title, :type, :description, :location, :district, :address, :price, :price_period, :touring_fee,
                  :bedrooms, :bathrooms, :area_sqm, :status, :is_featured, :amenities, :badge)
         ");
         $stmt->execute($data);

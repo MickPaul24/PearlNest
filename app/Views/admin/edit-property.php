@@ -157,6 +157,14 @@ require __DIR__ . '/layout.php';
                             </select>
                         </div>
                     </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Touring Fee (UGX)</label>
+                            <input type="number" name="touring_fee" class="form-input"
+                                   value="<?= isset($property['touring_fee']) ? (float)$property['touring_fee'] : 0 ?>" min="0" step="0.01">
+                        </div>
+                        <div class="form-group"></div>
+                    </div>
                     <div class="form-row-3">
                         <div class="form-group">
                             <label>Bedrooms</label>

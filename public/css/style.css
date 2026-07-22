@@ -257,12 +257,10 @@ img { display: block; max-width: 100%; }
 .alert-warning { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
 .alert-info    { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
 
-/* ════════════════════════
-   HERO
-════════════════════════ */
 .hero {
   position: relative;
-  background: url('https://picsum.photos/seed/kampala-hero/1600/700') center/cover no-repeat;
+  /* Hero shows a relatable property/estate image to convey rentals */
+  background: url('https://images.unsplash.com/photo-1560184897-6f2b8b9d9f6c?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
   min-height: 580px;
   display: flex; align-items: center;
 }
